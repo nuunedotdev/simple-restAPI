@@ -17,19 +17,10 @@ router.get('/', async (req, res) => {
 
 
 router.post('/', async (req, res) => {
+    const {error} = validateCustomer(req.body)
 
-    const customerSchema = {
-        customer_name: Joi.string().min(3).required(),
-        customer_phone: Joi.number().min(10).required(),
-        customer_email: Joi.string().required(),
-        customer_address: Joi.string().max(60).required(),
-    }
-
-    const result = Joi.validate(req.body, customerSchema);
-    // console.log(result)
-
-    if( result.error ){
-        res.status(400).send(result.error.details[0].message);
+    if( error ){
+        res.status(400).send(error.details[0].message);
         return;
     }
 
@@ -64,7 +55,15 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.patch('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
+
+    const {error} = validateCustomer(req.body)
+
+    if( error ){
+        res.status(400).send(error.details[0].message);
+        return;
+    }
+
     try {
         const customer = customerModel.update({
             customer_email: req.body.customer_email,
@@ -98,5 +97,19 @@ router.delete('/:id', async (req, res) => {
     }
 
 })
+
+
+
+function validateCustomer(customer) {
+    
+    const customerSchema = {
+        customer_name: Joi.string().min(3).required(),
+        customer_phone: Joi.number().min(10).required(),
+        customer_email: Joi.string().required(),
+        customer_address: Joi.string().max(60).required(),
+    }
+
+    return Joi.validate(customer, customerSchema);
+}
 
 module.exports = router
