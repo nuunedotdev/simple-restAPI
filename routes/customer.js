@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const express = require('express');
 const router = express.Router()
 
@@ -16,20 +17,22 @@ router.get('/', async (req, res) => {
 
 
 router.post('/', async (req, res) => {
-    try{
-        const customer = await customerModel.create({ 
-            customer_name: req.body.customer_name,
-            customer_phone: req.body.customer_phone,
-            customer_email: req.body.customer_email,
-            customer_address: req.body.customer_address
-        });
 
-        res.status(200).send(customer)
-
-    }catch(error){
-        // res.status(200).send('Home Page Customer Router')
-        console.log("Error: ", error)
+    const customerSchema = {
+        customer_name: Joi.string().min(3).required(),
+        customer_phone: Joi.number().min(10).max(20).required(),
+        customer_email: Joi.string().required(),
+        customer_address: Joi.string().max(60).required(),
     }
+
+    const result = Joi.validate(req.body, customerSchema);
+    // console.log(result)
+
+    // if( result.error ){
+    //     res.status(200).send(result.error);
+    //     return;
+    // }
+   
 })
 
 router.get('/:id', async (req, res) => {

@@ -2,13 +2,13 @@ const express = require('express')
 const {sequelize, dbConn} = require('./config/db_config')
 const customerModel = require('./models/customer')
 
+const app = express()
+app.use(express.json())
 
 // Routes
 const customerRoute = require('./routes/customer')
 
 
-const app = express()
-app.use(express.json())
 const port = 8000
 
 
